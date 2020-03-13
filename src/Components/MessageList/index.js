@@ -8,7 +8,7 @@ const MessageList = ({ messages }) => {
   }
 
   const messageComponents = messages.map((message) => (
-    <li key={message.id}><Message text={message.text} /></li>
+    <li key={message._id}><Message text={message.text} /></li>
   ));
 
   return (

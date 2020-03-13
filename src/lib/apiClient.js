@@ -1,10 +1,10 @@
 const isOk = (response) => response.ok ? response.json() : Promise.reject(new Error('Failed to load data from server'));
 
 const client = {
-  url: 'http://localhost:3000',
+  url: 'http://localhost:3001',
   getMessages() {
     return fetch(`${this.url}/messages`)
-            .then(isOk);
+      .then(isOk);
   },
   createMessage(messageText) {
     const options = {
@@ -16,7 +16,7 @@ const client = {
     };
 
     return fetch(`${this.url}/messages`, options)
-            .then(isOk);
+      .then(isOk);
   }
 };
 

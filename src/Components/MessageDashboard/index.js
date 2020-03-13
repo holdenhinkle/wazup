@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import MessageList from '../MessageList';
 import AddMessageForm from '../AddMessageForm';
-import apiClient from '../../lib/apiClient';
+import sdk from '../../lib/sdk';
 
 class MessageDashboard extends Component {
   state = {
@@ -9,8 +9,9 @@ class MessageDashboard extends Component {
   };
 
   componentDidMount() {
-    apiClient.getMessages()
+    return sdk.getCollection('Message')
       .then((messages) => {
+        console.log(messages)
         this.setState({
           messages
         });
@@ -18,15 +19,15 @@ class MessageDashboard extends Component {
   }
 
   handleOnSubmit = (messageText) => {
-
-    return apiClient.createMessage(messageText)
-            .then((message) => {
-              this.setState((prevState) => (
-                {
-                  messages: [...prevState.messages, message],
-                }
-              ));
-            });
+    return sdk.createResource({ text: messageText }, 'Message')
+      .then((message) => {
+        console.log(message + 'from inside then')
+        this.setState((prevState) => (
+          {
+            messages: [...prevState.messages, message],
+          }
+        ));
+      });
   };
 
   render() {
@@ -34,7 +35,7 @@ class MessageDashboard extends Component {
 
     return (
       <div className="messageDashboard">
-        <MessageList messages={messages}/>
+        <MessageList messages={messages} />
         <AddMessageForm onSubmit={this.handleOnSubmit} />
       </div>
     )
