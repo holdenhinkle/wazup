@@ -24,7 +24,56 @@ const sdk = {
     };
     return fetch(`${this.url}/${collection}`, options)
       .then(isOk);
-  }
+  },
+  deleteResource(collection, id) {
+    const options = {
+      method: 'DELETE',
+    };
+    return fetch(`${this.url}/${collection}/${id}`, options)
+      .then(isOk);
+  },
+  updateResource(collection, id, data) {
+    const options = {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    };
+    return fetch(`${this.url}/${collection}/${id}`, options)
+      .then(isOk)
+      .then((updatedResource) => console.log(updatedResource))
+  },
+  overwriteResource(collection, id, data) {
+    const options = {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    };
+    return fetch(`${this.url}/${collection}/${id}`, options)
+      .then(isOk)
+      .then((newResource) => console.log(newResource))
+
+  },
+  getCollectionsList() {
+    return fetch(`${this.url}/collections`)
+      .then(isOk)
+      .then((list) => console.log(list))
+  },
+  createNewCollection(collectionName) {
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({ "collectionName": collectionName }), // problem here?
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    };
+    return fetch(`${this.url}/collections`, options)
+      .then(isOk)
+      .then((coll) => console.log(coll))
+  },
 }
 
 export default sdk;
