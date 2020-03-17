@@ -35,12 +35,26 @@ class MessageDashboard extends Component {
       });
   };
 
+  handleDeleteMessage = (message_id) => {
+    return sdk.deleteResource("Message", message_id)
+      .then((message) => {
+        this.setState((prevState) => {
+          let newMessages = prevState.messages.filter((msg) => {
+            return !(msg._id === message._id)
+          })
+          return {
+            messages: newMessages
+          };
+        })
+      })
+  }
+
   render() {
     const { messages } = this.state;
 
     return (
       <div className="messageDashboard">
-        <MessageList messages={messages} />
+        <MessageList messages={messages} onDeleteMessage={this.handleDeleteMessage} />
         <AddMessageForm onSubmit={this.handleOnSubmit} />
       </div>
     )
