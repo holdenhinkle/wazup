@@ -10,10 +10,21 @@ class MessageDashboard extends Component {
 
   componentDidMount() {
     // test sdk methods here:
-    // sdk.updateResource("howdy", "5e71222a1b5ca20805551adc", { 'name': 'howdy thing 1!!!!', 'age': '32' })
-    // sdk.updateResource("howdy", "5e7122261b5ca20805551adb", { 'name': 'howdy thing 2!!!!', 'age': "32" })
+    // sdk.createNewCollection("howdy")
+    // const id = "5e72493c24df021c10b56b85"
+    // sdk.createResource({ "name": "howdy" }, "howdy")
+    // sdk.updateResource("howdy", id, { 'name': 'howdy thing 1!!!!', 'age': '32' })
+    // sdk.updateResource("howdy", id, { 'name': 'howdy thing 2!!!!', 'age': "32" })
 
-    // sdk.overwriteResource("howdy", "5e7122221b5ca20805551ada", { 'name': 'howdy thing 3.5!!!!' })
+    // sdk.overwriteResource("howdy", id, { 'name': 'howdy thing 3.5!!!!' })
+    // sdk.getCollection('Message')
+    //   .then((messages) => {
+    //     console.log(messages)
+    //   })
+    // sdk.getResource("Message", "5e7245f824df021c10b56b7d")
+    //   .then((message) => {
+    //     console.log(message)
+    //   });
 
 
     return sdk.getCollection('Message')
