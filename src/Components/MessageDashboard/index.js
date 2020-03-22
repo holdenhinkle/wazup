@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import MessageList from '../MessageList';
 import AddMessageForm from '../AddMessageForm';
-import sdk from '../../lib/sdk';
+import sdk from '../../lib';
 
 class MessageDashboard extends Component {
   state = {
     messages: [],
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     // test sdk methods here:
     // sdk.createNewCollection("howdy")
     // const id = "5e72493c24df021c10b56b85"
@@ -26,17 +26,20 @@ class MessageDashboard extends Component {
     //     console.log(message)
     //   });
 
-
-    return sdk.getCollection('Message')
-      .then((messages) => {
-        this.setState({
-          messages
+    sdk.auth
+      .login('lol@lol.com', 'lol')
+      .then(() => {
+        sdk.db.getCollection('Message')
+        .then((messages) => {
+          this.setState({
+            messages
+          });
         });
-      });
+      })
   }
 
   handleOnSubmit = (messageText) => {
-    return sdk.createResource({ text: messageText }, 'Message')
+    return sdk.db.createResource('Message', { text: messageText })
       .then((message) => {
         this.setState((prevState) => (
           {
@@ -47,7 +50,7 @@ class MessageDashboard extends Component {
   };
 
   handleDeleteMessage = (message_id) => {
-    return sdk.deleteResource("Message", message_id)
+    return sdk.db.deleteResource("Message", message_id)
       .then((message) => {
         this.setState((prevState) => {
           let newMessages = prevState.messages.filter((msg) => {

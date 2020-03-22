@@ -1,23 +1,32 @@
-const isOk = (response) => response.ok ? response.json() : Promise.reject(new Error('Failed to load data from server'));
-
-const client = {
-  url: 'http://localhost:3001',
-  getMessages() {
-    return fetch(`${this.url}/messages`)
-      .then(isOk);
-  },
-  createMessage(messageText) {
-    const options = {
-      method: 'POST',
-      body: JSON.stringify({ text: messageText }),
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    };
-
-    return fetch(`${this.url}/messages`, options)
-      .then(isOk);
-  }
+const isOk = (response) => {
+  return response.ok ?
+    response.json() :
+    Promise.reject(new Error(response.statusText));
 };
 
-export default client;
+const sendRequest = (url, method = 'GET', body) => {
+  const options = {
+    method,
+    headers: {
+      authorization: 'API anotherSuperSecretThing',
+    },
+    credentials: 'include',
+  };
+
+  if (body) {
+    // make sure body is an object
+    const bodyType = typeof body;
+
+    if (bodyType !== 'object') {
+      body = { data: body };
+    }
+
+    options.headers['content-type'] = 'application/json';
+    options.body = JSON.stringify(body);
+  }
+
+  return fetch(url, options)
+    .then(isOk)
+}
+
+export default sendRequest;
