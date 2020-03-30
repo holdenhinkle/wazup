@@ -16,13 +16,10 @@ class AddMessageForm extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
-    this.props
-      .onSubmit(this.state.messageText)
-      .then(() => {
-        this.setState({
-          messageText: '',
-        });
-      });
+    this.props.onSubmit(this.state.messageText)
+    this.setState({
+      messageText: '',
+    });
   };
 
   render() {

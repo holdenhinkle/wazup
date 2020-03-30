@@ -20,7 +20,6 @@ const dbFactory = (url) => ({
   overwriteResource(collection, id, data) {
     return sendRequest(`${url}/${collection}/${id}`, 'PUT', data)
       .then((newResource) => console.log(newResource))
-
   },
   getCollectionsList() {
     return sendRequest(`${url}/collections`)
