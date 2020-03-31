@@ -100,6 +100,7 @@ class MessageDashboard extends Component {
   }
 
   create = (message) => {
+    console.log(message);
     if (message.collection === "messages") {
       this.setState((prevState) => ({
         messages: [...prevState.messages, message.response],
