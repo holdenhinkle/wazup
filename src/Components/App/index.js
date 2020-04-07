@@ -31,6 +31,10 @@ class App extends Component {
       });
   }
 
+  // Upon loggin in for the first time, user's should be asked to 
+  // set a name for themselves. Should this be when a usersmeta document 
+  // be created for them?
+
   // handleLoginSubmit = async ({ email, password }) => {
   //   sdk.auth.login(email, password)
   //     .then((res) => {
