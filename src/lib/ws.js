@@ -5,47 +5,54 @@ const createNewWebsocket = (url) => {
 }
 
 const wsFactory = (ws) => ({
+  findResource(collection, query) { // finish this
+    this.sendMessage({
+      action: 'find',
+      collection,
+      query,
+    });
+  },
   getCollection(collection) {
     this.sendMessage({
       action: 'getAll',
-      collection: collection,
+      collection,
     });
   },
   getResource(collection, id) {
     this.sendMessage({
       action: 'getOne',
-      collection: collection,
-      id: id,
+      collection,
+      id,
     });
   },
   createResource(collection, data) {
     this.sendMessage({
       action: 'create',
-      collection: collection,
-      data: data,
+      collection,
+      data,
     });
   },
   overwriteResource(collection, id, data) {
     this.sendMessage({
       action: 'update',
-      collection: collection,
-      id: id,
-      data: data,
+      collection,
+      id,
+      data,
     });
   },
   updateResource(collection, id, data) {
     this.sendMessage({
       action: 'patch',
-      collection: collection,
-      id: id,
-      data: data,
+      collection,
+      id,
+      data,
     });
   },
   deleteResource(collection, id) {
     this.sendMessage({
       action: 'delete',
-      collection: collection,
-      id: id,
+      collection,
+      id,
     });
   },
   open(message) {

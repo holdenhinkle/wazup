@@ -6,17 +6,49 @@ import sdk from '../../lib';
 class MessageDashboard extends Component {
   // implement ping/pong
   state = {
+    usersChannels: [],
+    usersCurrentChannel: { channelType: null, channelId: null },
+    allChannels: [],
     messages: [],
   };
 
   componentDidMount() {
+    // get channels, user's channels, user's current channel
+    sdk.db.getCollection('usersmeta')
+      .then((users) => users.find((user) => user.userId === this.props.userId))
+      .then((user) => {
+        if (user.channels.length > 0) {
+          this.setUsersChannels(user.channels);
+        }
+
+        if (Object.keys(user.currentChannel).length > 0) {
+          this.setUsersCurrentChannel(user.currentChannel);
+        }
+      });
+
+    // get messages for user's current channel
+    sdk.db.getCollection('messages')
+      .then((messages) => {
+        return messages.filter((message) => (
+          message.channelType === this.state.usersCurrentChannel.channelType &&
+          message.channelId === this.state.usersCurrentChannel.channelId
+        ))
+      })
+      .then((messages) => this.setMessages(messages));
+
     this.websocket = sdk.ws();
 
     this.websocket.onopen = (e) => {
-      this.websocket.actions.getCollection('messages');
-      this.websocket.actions.open({
-        userId: '12345',
-      });
+    }
+
+    this.websocket.onmessage = (e) => {
+      const message = JSON.parse(e.data);
+      this.websocketActionRouter(message);
+    }
+
+    this.websocket.onclose = (e) => {
+      // clearTimeout(this.pingTimeout);
+      console.log('disconnected')
     }
 
     // function heartbeat() {
@@ -32,16 +64,36 @@ class MessageDashboard extends Component {
     // }
 
     // this.websocket.on('ping', heartbeat);
+  }
 
-    this.websocket.onmessage = (e) => {
-      const message = JSON.parse(e.data);
-      this.websocketActionRouter(message);
-    }
+  setUsersChannels = (usersChannels) => {
+    this.setState({
+      usersChannels,
+    });
+  }
 
-    this.websocket.onclose = (e) => {
-      // clearTimeout(this.pingTimeout);
-      console.log('disconnected')
-    }
+  setUsersCurrentChannel = (usersCurrentChannel) => {
+    this.setState({
+      usersCurrentChannel,
+    });
+  }
+
+  addChannelToUsersChannels = (channel) => {
+    this.setState((prevState) => ({
+      usersChannels: [...prevState.usersChannels, channel],
+    }));
+  }
+
+  deleteChannelFromUsersChannels = (channel) => {
+    this.setState({
+      usersChannels: this.state.usersChannels.filter((currentChannel) => currentChannel !== channel),
+    });
+  }
+
+  setMessages = (messages) => { // reuse this method
+    this.setState({
+      messages,
+    });
   }
 
   websocketActionRouter = (message) => {
@@ -49,9 +101,9 @@ class MessageDashboard extends Component {
     const { action } = message;
 
     switch (action) {
-      // case 'find':
-      //   find(message);
-      //   break;
+      case 'query': // not in use
+        this.query(message);
+        break;
       // case 'getOne':
       //   getOne(message);
       //   break;
@@ -89,6 +141,18 @@ class MessageDashboard extends Component {
       //   message: 'Error: valid action not provided.'
       // });
     }
+  }
+
+  query = (message) => { // not in use
+    // if (message.collection === "messages") {
+    //   this.setState((prevState) => ({
+    //     // messages: [...prevState.messages, ...message.response],
+    //   }));
+    // } else if (message.collection === "channels") {
+    //   this.setState((prevState) => ({
+    //     // messages: [...prevState.messages, ...message.response],
+    //   }));
+    // }
   }
 
   getAll = (message) => {
@@ -151,8 +215,15 @@ class MessageDashboard extends Component {
     console.log(message.response);
   }
 
-  handleOnSubmit = (messageText) => {
-    this.websocket.actions.createResource('messages', { text: messageText });
+  handleOnSubmit = (text) => {
+    const message = {
+      userId: this.props.userId,
+      channelType: this.state.usersCurrentChannel.channelType,
+      channelId: this.state.usersCurrentChannel.channelId,
+      text: text,
+    }
+
+    this.websocket.actions.createResource('messages', message);
   }
 
   handleDeleteMessage = (messageId) => {
@@ -167,11 +238,16 @@ class MessageDashboard extends Component {
     this.websocket.actions.overwriteResource('messages', messageId, { text: messageText });
   }
 
+  logout = () => {
+    sdk.auth.logout();
+  }
+
   render() {
     const { messages } = this.state;
 
     return (
       <div className="messageDashboard">
+        <button onClick={this.props.toggleLoggedIn}>Logout</button>
         <MessageList
           messages={messages}
           onDeleteMessage={this.handleDeleteMessage}
