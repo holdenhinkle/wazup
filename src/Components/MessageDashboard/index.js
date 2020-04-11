@@ -18,7 +18,6 @@ class MessageDashboard extends Component {
 
     // sub user to user's channels on websocket open
     this.websocket.onopen = (e) => {
-      console.log('IN OPEN this.websocket.onopen = (e) => {');
       this.websocket.actions.joinUsersChannels('usersmeta');  // where should I store the name of the usersInformationCollection?
     }
 
