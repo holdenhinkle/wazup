@@ -66,6 +66,12 @@ const wsFactory = (ws) => ({
   sendMessage(message) {
     ws.send(JSON.stringify(message));
   },
+  joinUsersChannels(usersInformationCollection) {
+    this.sendMessage({
+      action: 'joinUsersChannels',
+      usersInformationCollection,
+    });
+  }
   // getCollectionsList() {
   //   return sendRequest(`${url}/collections`)
   //     .then((list) => console.log(list))
