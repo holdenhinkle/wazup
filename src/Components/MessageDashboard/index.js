@@ -13,6 +13,25 @@ class MessageDashboard extends Component {
   };
 
   componentDidMount() {
+    // open websocket connection
+    this.websocket = sdk.ws();
+
+    // sub user to user's channels on websocket open
+    this.websocket.onopen = (e) => {
+      console.log('IN OPEN this.websocket.onopen = (e) => {');
+      this.websocket.actions.joinUsersChannels('usersmeta');  // where should I store the name of the usersInformationCollection?
+    }
+
+    this.websocket.onmessage = (e) => {
+      const message = JSON.parse(e.data);
+      this.websocketActionRouter(message);
+    }
+
+    this.websocket.onclose = (e) => {
+      // clearTimeout(this.pingTimeout);
+      console.log('disconnected')
+    }
+
     // get channels, user's channels, user's current channel
     sdk.db.getCollection('usersmeta')
       .then((users) => users.find((user) => user.userId === this.props.userId))
@@ -35,21 +54,6 @@ class MessageDashboard extends Component {
         ))
       })
       .then((messages) => this.setMessages(messages));
-
-    this.websocket = sdk.ws();
-
-    this.websocket.onopen = (e) => {
-    }
-
-    this.websocket.onmessage = (e) => {
-      const message = JSON.parse(e.data);
-      this.websocketActionRouter(message);
-    }
-
-    this.websocket.onclose = (e) => {
-      // clearTimeout(this.pingTimeout);
-      console.log('disconnected')
-    }
 
     // function heartbeat() {
     //   clearTimeout(this.pingTimeout);
@@ -130,6 +134,9 @@ class MessageDashboard extends Component {
         break;
       case 'open':
         this.onOpen(message);
+        break;
+      case 'joinUsersChannels':
+        this.joinUsersChannels(message);
         break;
       // case 'close':
       //   close(message);
@@ -215,12 +222,17 @@ class MessageDashboard extends Component {
     console.log(message.response);
   }
 
+  joinUsersChannels = (message) => {
+    const { action, usersChannels } = message;
+    console.log(`${action}: ${usersChannels.length} channel(s) joined`);
+  }
+
   handleOnSubmit = (text) => {
     const message = {
       userId: this.props.userId,
       channelType: this.state.usersCurrentChannel.channelType,
       channelId: this.state.usersCurrentChannel.channelId,
-      text: text,
+      text,
     }
 
     this.websocket.actions.createResource('messages', message);
@@ -230,12 +242,19 @@ class MessageDashboard extends Component {
     this.websocket.actions.deleteResource('messages', messageId);
   }
 
-  handleUpdateMessage = (messageId, messageText) => {
-    this.websocket.actions.updateResource('messages', messageId, { text: messageText });
+  handleUpdateMessage = (messageId, text) => {
+    this.websocket.actions.updateResource('messages', messageId, { text });
   }
 
-  handleOverwriteMessage = (messageId, messageText) => {
-    this.websocket.actions.overwriteResource('messages', messageId, { text: messageText });
+  handleOverwriteMessage = (messageId, text) => {
+    const message = {
+      userId: this.props.userId,
+      channelType: this.state.usersCurrentChannel.channelType,
+      channelId: this.state.usersCurrentChannel.channelId,
+      text,
+    }
+
+    this.websocket.actions.overwriteResource('messages', messageId, message);
   }
 
   logout = () => {
