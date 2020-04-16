@@ -22,25 +22,13 @@ class App extends Component {
   }
 
   handleRegisterSubmit = ({ email, password }) => {
-    // register
-    // login
-    // set userId
-    // toggle loggedIn
-    // create usermeta document for user
     sdk.auth.register(email, password)
       .then((registerRes) => {
-        console.log('Registration response: ', registerRes);
         return sdk.auth.login(email, password);
       })
       .then((loginRes) => {
-        console.log('Login response: ', loginRes);
         this.setUserId(loginRes.id);
         this.toggleLoggedIn();
-
-        //   return sdk.db.createNewCollection('usersmeta');
-        // })
-        // .then((newCollectionRes) => {
-        //   console.log('New collection response: ', newCollectionRes);
 
         const data = {
           userdId: loginRes.id,
@@ -51,9 +39,6 @@ class App extends Component {
         }
 
         return sdk.db.createResource('usersmeta', data);
-      })
-      .then((usersmetaRes) => {
-        console.log('Create resource response: ', usersmetaRes);
       })
       .catch((e) => {
         console.log(e);
