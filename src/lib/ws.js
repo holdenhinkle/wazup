@@ -80,6 +80,14 @@ const wsFactory = (ws) => ({
       channelId,
     });
   },
+  leaveChannel(usersInformationCollection, channelType, channelId) {
+    this.sendMessage({
+      action: 'leaveChannel',
+      usersInformationCollection,
+      channelType,
+      channelId,
+    });
+  }
   // getCollectionsList() {
   //   return sendRequest(`${url}/collections`)
   //     .then((list) => console.log(list))
