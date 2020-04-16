@@ -53,6 +53,10 @@ class MessageDashboard extends Component {
         ))
       })
       .then((messages) => this.setMessages(messages));
+
+    // get channels
+    sdk.db.getCollection('rooms')
+      .then((channels) => this.setChannels(channels));
   }
 
   addNewMessage = (message) => {
@@ -82,6 +86,12 @@ class MessageDashboard extends Component {
     this.addChannelToUsersChannels(newChannel);
     this.updateUsermetaChannels();
     this.clearMessages();
+  }
+
+  setChannels = (channels) => { // reuse this method
+    this.setState({
+      channels,
+    });
   }
 
   addNewChannel = (channel) => {
