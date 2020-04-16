@@ -5,7 +5,7 @@ const createNewWebsocket = (url) => {
 }
 
 const wsFactory = (ws) => ({
-  findResource(collection, query) { // finish this
+  findResource(collection, query) {
     this.sendMessage({
       action: 'find',
       collection,
