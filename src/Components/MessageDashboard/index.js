@@ -17,9 +17,9 @@ class MessageDashboard extends Component {
     this.websocket = sdk.ws();
 
     // sub user to user's channels on websocket onopen event
-    this.websocket.onopen = (e) => {
-      this.websocket.actions.joinUsersChannels('usersmeta');  // where should I store the name of the usersInformationCollection?
-    }
+    // this.websocket.onopen = (e) => {
+    //   this.websocket.actions.joinUsersChannels('usersmeta');  // where should I store the name of the usersInformationCollection?
+    // }
 
     this.websocket.onmessage = (e) => {
       const message = JSON.parse(e.data);
@@ -45,27 +45,51 @@ class MessageDashboard extends Component {
 
     // this.websocket.on('ping', heartbeat);
 
-    // get channels, user's channels, user's current channel
-    sdk.db.getCollection('usersmeta')
-      .then((usersmeta) => usersmeta.find((user) => user.userId === this.props.userId))
-      .then((usermeta) => {
-        if (usermeta.channels.length > 0) {
-          this.setUsersChannels(usermeta.channels);
-        }
+    // sdk.db.getCollection('usersmeta')
+    //   .then((usersmeta) => {
+    //     const user = usersmeta.find((user) => user.userId === this.props.userId);
 
-        if (Object.keys(usermeta.currentChannel).length > 0) {
-          this.setUsersCurrentChannel(usermeta.currentChannel);
-        }
-      });
+    //     console.log('USER FROM DASHBOARD', user);
+
+    //     if (user) {
+    //       return user;
+    //     } else {
+    //       const usermeta = {
+    //         userdId: this.props.userId,
+    //         name: null,
+    //         online: false,
+    //         channels: [],
+    //         currentChannel: {},
+    //       };
+
+    //       return sdk.db.createResource('usersmeta', usermeta);
+    //     }
+    //   })
+    //   .then((usermeta) => {
+    //     console.log('USERMETA FROM DASHBOARD', usermeta);
+    //   });
+
+    // get channels, user's channels, user's current channel
+    // sdk.db.getCollection('usersmeta')
+    //   .then((usersmeta) => usersmeta.find((user) => user.userId === this.props.userId))
+    //   .then((usermeta) => {
+    //     if (usermeta.channels.length > 0) {
+    //       this.setUsersChannels(usermeta.channels);
+    //     }
+
+    //     if (Object.keys(usermeta.currentChannel).length > 0) {
+    //       this.setUsersCurrentChannel(usermeta.currentChannel);
+    //     }
+    //   });
 
     // get messages for user's current channel
     sdk.db.getCollection('messages')
-      .then((messages) => {
-        return messages.filter((message) => (
-          message.channelType === this.state.usersCurrentChannel.channelType &&
-          message.channelId === this.state.usersCurrentChannel.channelId
-        ))
-      })
+      // .then((messages) => {
+      //   return messages.filter((message) => (
+      //     message.channelType === this.state.usersCurrentChannel.channelType &&
+      //     message.channelId === this.state.usersCurrentChannel.channelId
+      //   ))
+      // })
       .then((messages) => this.setMessages(messages));
   }
 

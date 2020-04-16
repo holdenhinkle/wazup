@@ -21,56 +21,44 @@ class App extends Component {
       });
   }
 
-  handleRegisterSubmit = async ({ email, password }) => {
+  handleRegisterSubmit = ({ email, password }) => {
+    // register
+    // login
+    // set userId
+    // toggle loggedIn
+    // create usermeta document for user
     sdk.auth.register(email, password)
-      .then(() => {
-        this.handleLoginSubmit({ email, password });
+      .then((registerRes) => {
+        console.log('Registration response: ', registerRes);
+        return sdk.auth.login(email, password);
+      })
+      .then((loginRes) => {
+        console.log('Login response: ', loginRes);
+        this.setUserId(loginRes.id);
+        this.toggleLoggedIn();
+
+        //   return sdk.db.createNewCollection('usersmeta');
+        // })
+        // .then((newCollectionRes) => {
+        //   console.log('New collection response: ', newCollectionRes);
+
+        const data = {
+          userdId: loginRes.id,
+          name: null,
+          online: false,
+          channels: [],
+          currentChannel: {},
+        }
+
+        return sdk.db.createResource('usersmeta', data);
+      })
+      .then((usersmetaRes) => {
+        console.log('Create resource response: ', usersmetaRes);
       })
       .catch((e) => {
         console.log(e);
       });
   }
-
-  // Upon loggin in for the first time, user's should be asked to 
-  // set a name for themselves. Should this be when a usersmeta document 
-  // be created for them?
-
-  // handleLoginSubmit = async ({ email, password }) => {
-  //   sdk.auth.login(email, password)
-  //     .then((res) => {
-  //       this.setUserId(res.id);
-  //     })
-  //     .then(() => {
-  //       return sdk.db.getCollection('usersmeta');
-  //     })
-  //     .then((usersmeta) => {
-  //       console.log('USERS ID', this.state.usersId);
-  //       const user = usersmeta.filter((user) => user.userId === this.state.userId);
-  //       sdk.db.updateResource('usersmeta', user.id, { online: true });
-  //     })
-  //     .then(() => {
-  //       this.toggleLoggedIn();
-  //     })
-  // }
-
-  // handleRegisterSubmit = async ({ email, password }) => {
-  //   try {
-  //     const res = await sdk.auth.register(email, password);
-
-  //     await sdk.db.createResource('usersmeta', {
-  //       userdId: res.id,
-  //       online: false,
-  //       channels: [],
-  //       currentChannel: {},
-  //       timeOpen: 'asdf',
-  //       timeClose: 'asdf',
-  //     });
-
-  //     this.handleLoginSubmit({ email, password });
-  //   } catch (e) {
-  //     console.log(e); // finish this
-  //   }
-  // }
 
   setUserId = (userId) => {
     this.setState({
@@ -89,24 +77,25 @@ class App extends Component {
   render() {
     return (
       <div className="App" >
-        {this.state.loggedIn ?
-          <MessageDashboard
-            toggleLoggedIn={this.toggleLoggedIn}
-            userId={this.state.userId}
-          />
-          :
-          <div>
+        {
+          this.state.loggedIn ?
+            <MessageDashboard
+              toggleLoggedIn={this.toggleLoggedIn}
+              userId={this.state.userId}
+            />
+            :
             <div>
-              <Login
-                handleLoginSubmit={this.handleLoginSubmit}
-              />
+              <div>
+                <Login
+                  handleLoginSubmit={this.handleLoginSubmit}
+                />
+              </div>
+              <div>
+                <Register
+                  handleRegisterSubmit={this.handleRegisterSubmit}
+                />
+              </div>
             </div>
-            <div>
-              <Register
-                handleRegisterSubmit={this.handleRegisterSubmit}
-              />
-            </div>
-          </div>
         }
       </div>
     );
