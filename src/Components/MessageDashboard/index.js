@@ -322,6 +322,26 @@ class MessageDashboard extends Component {
     this.websocket.actions.createResource('rooms', message);
   }
 
+  handleJoinChannel = (id) => {
+    // state make current channel
+    // state add to usersChannels
+    // db make current channel
+    // db add to usersChannels
+  }
+
+  handleLeaveChannel = (id) => {
+
+  }
+
+  handleChangeChannel = (id) => {
+    // state make current channel
+    // db make current channel
+  }
+
+  handleDeleteChannel = (id) => {
+
+  }
+
   render() {
     const { messages, channels, usersChannels, usersCurrentChannel } = this.state;
 
