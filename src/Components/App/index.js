@@ -23,22 +23,23 @@ class App extends Component {
 
   handleRegisterSubmit = ({ email, password }) => {
     sdk.auth.register(email, password)
-      .then((registerRes) => {
+      .then(() => {
         return sdk.auth.login(email, password);
       })
       .then((loginRes) => {
-        this.setUserId(loginRes.id);
-        this.toggleLoggedIn();
-
         const data = {
-          userdId: loginRes.id,
+          userId: loginRes.id,
           name: null,
           online: false,
           channels: [],
-          currentChannel: {},
+          currentChannel: { channelType: null, channelId: null },
         }
 
         return sdk.db.createResource('usersmeta', data);
+      })
+      .then((usersmetaRes) => {
+        this.setUserId(usersmetaRes.userId);
+        this.toggleLoggedIn();
       })
       .catch((e) => {
         console.log(e);
