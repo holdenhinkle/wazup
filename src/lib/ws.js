@@ -87,6 +87,14 @@ const wsFactory = (ws) => ({
       channelType,
       channelId,
     });
+  },
+  changeChannel(usersInformationCollection, channelType, channelId) {
+    this.sendMessage({
+      action: 'changeChannel',
+      usersInformationCollection,
+      channelType,
+      channelId,
+    });
   }
   // getCollectionsList() {
   //   return sendRequest(`${url}/collections`)
