@@ -96,15 +96,6 @@ const wsFactory = (ws) => ({
       channelId,
     });
   }
-  // getCollectionsList() {
-  //   return sendRequest(`${url}/collections`)
-  //     .then((list) => console.log(list))
-  // },
-  // createNewCollection(collectionName) {
-  //   return sendRequest(`${url}/collections`, 'POST', { collectionName })
-  //     .then((coll) => console.log(coll));
-  // },
-
 });
 
 export default createNewWebsocket;
