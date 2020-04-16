@@ -34,7 +34,7 @@ class AddMessageForm extends Component {
           onChange={this.handleOnChange}
         />
 
-        <button type="submit">Send!</button>
+        <button type="submit">Post Message</button>
       </form>
     )
   }
