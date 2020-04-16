@@ -72,12 +72,14 @@ const wsFactory = (ws) => ({
       usersInformationCollection,
     });
   },
-  joinChannel(usersInformationCollection, channelType, channelId) {
+  joinChannel({ usersInformationCollection, channelType, channelId, channelName, userId }) {
     this.sendMessage({
       action: 'joinChannel',
       usersInformationCollection,
       channelType,
       channelId,
+      channelName,
+      userId,
     });
   },
   leaveChannel(usersInformationCollection, channelType, channelId) {
@@ -88,12 +90,14 @@ const wsFactory = (ws) => ({
       channelId,
     });
   },
-  changeChannel(usersInformationCollection, channelType, channelId) {
+  changeChannel({ usersInformationCollection, channelType, channelId, channelName, userId }) {
     this.sendMessage({
       action: 'changeChannel',
       usersInformationCollection,
       channelType,
       channelId,
+      channelName,
+      userId,
     });
   }
 });
