@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ChannelList from '../ChannelList';
 import MessageList from '../MessageList';
 import AddMessageForm from '../AddMessageForm';
 import AddChannelForm from '../AddChannelForm';
@@ -165,6 +166,15 @@ class MessageDashboard extends Component {
       case 'joinUsersChannels':
         this.joinUsersChannels(message);
         break;
+      case 'joinChannel':
+        // joinChannel();
+        break;
+      case 'leaveChannel':
+        // leaveChannel();
+        break;
+      case 'changeChannel':
+        // changeChannel();
+        break;
       // case 'close':
       //   close(message);
       //   break;
@@ -303,11 +313,21 @@ class MessageDashboard extends Component {
   }
 
   render() {
-    const { messages } = this.state;
+    const { messages, channels, usersChannels, usersCurrentChannel } = this.state;
 
     return (
       <div className="messageDashboard">
         <button onClick={this.props.toggleLoggedIn}>Logout</button>
+        <ChannelList
+          userId={this.props.userId}
+          channels={channels}
+          usersChannels={usersChannels}
+          usersCurrentChannel={usersCurrentChannel}
+          onJoinChannel={this.handleJoinChannel}
+          onLeaveChannel={this.handleLeaveChannel}
+          onChangeChannel={this.handleChangeChannel}
+          onDeleteChannel={this.handleDeleteChannel}
+        />
         <MessageList
           messages={messages}
           onDeleteMessage={this.handleDeleteMessage}
