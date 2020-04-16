@@ -71,7 +71,15 @@ const wsFactory = (ws) => ({
       action: 'joinUsersChannels',
       usersInformationCollection,
     });
-  }
+  },
+  joinChannel(usersInformationCollection, channelType, channelId) {
+    this.sendMessage({
+      action: 'joinChannel',
+      usersInformationCollection,
+      channelType,
+      channelId,
+    });
+  },
   // getCollectionsList() {
   //   return sendRequest(`${url}/collections`)
   //     .then((list) => console.log(list))
