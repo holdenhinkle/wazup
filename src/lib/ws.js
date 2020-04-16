@@ -55,14 +55,6 @@ const wsFactory = (ws) => ({
       id,
     });
   },
-  open(message) {
-    message.action = 'open';
-    this.sendMessage(message);
-  },
-  close(message) {
-    message.action = 'close';
-    this.sendMessage(message);
-  },
   sendMessage(message) {
     ws.send(JSON.stringify(message));
   },
@@ -99,7 +91,15 @@ const wsFactory = (ws) => ({
       channelName,
       creatorId,
     });
-  }
+  },
+  open(message) {
+    message.action = 'open';
+    this.sendMessage(message);
+  },
+  close(message) {
+    message.action = 'close';
+    this.sendMessage(message);
+  },
 });
 
 export default createNewWebsocket;
