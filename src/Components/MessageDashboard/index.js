@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import MessageList from '../MessageList';
 import AddMessageForm from '../AddMessageForm';
+import AddChannelForm from '../AddChannelForm';
 import sdk from '../../lib';
 
 class MessageDashboard extends Component {
@@ -37,7 +38,6 @@ class MessageDashboard extends Component {
           this.setUsersChannels(usermeta.channels);
         }
 
-        console.log('USERMETA', usermeta);
         if (usermeta.currentChannel.channelType && usermeta.currentChannel.channelId) {
           this.setUsersCurrentChannel(usermeta.currentChannel);
         }
@@ -245,6 +245,15 @@ class MessageDashboard extends Component {
     sdk.auth.logout();
   }
 
+  handleChannelSubmit = (name) => {
+    const message = {
+      userId: this.props.userId,
+      name,
+    }
+
+    this.websocket.actions.createResource('rooms', message);
+  }
+
   render() {
     const { messages } = this.state;
 
@@ -258,7 +267,11 @@ class MessageDashboard extends Component {
           onOverwriteMessage={this.handleOverwriteMessage}
         />
         <AddMessageForm
-          onSubmit={this.handleOnSubmit} />
+          onSubmit={this.handleOnSubmit}
+        />
+        <AddChannelForm
+          onSubmit={this.handleChannelSubmit}
+        />
       </div>
     )
   }
