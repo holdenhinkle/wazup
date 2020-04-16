@@ -7,8 +7,8 @@ import sdk from '../../lib';
 class MessageDashboard extends Component {
   state = {
     usersChannels: [],
-    usersCurrentChannel: { channelType: null, channelId: null },
-    allChannels: [],
+    usersCurrentChannel: { channelType: null, channelId: null, channelName: null },
+    channels: [],
     messages: [],
   };
 
@@ -54,6 +54,41 @@ class MessageDashboard extends Component {
       .then((messages) => this.setMessages(messages));
   }
 
+  addNewMessage = (message) => {
+    this.setState((prevState) => ({
+      messages: [...prevState.messages, message],
+    }));
+  }
+
+  setMessages = (messages) => { // reuse this method
+    this.setState({
+      messages,
+    });
+  }
+
+  clearMessages = () => {
+    this.setState({
+      messages: [],
+    });
+  }
+
+  createChannelOrchestrator = (channel) => {
+    const { channelType, _id, name, userId } = channel;
+    const newChannel = { channelType, channelId: _id, channelName: name, userId };
+
+    this.addNewChannel(channel);
+    this.setUsersCurrentChannel(newChannel);
+    this.addChannelToUsersChannels(newChannel);
+    this.updateUsermetaChannels();
+    this.clearMessages();
+  }
+
+  addNewChannel = (channel) => {
+    this.setState((prevState) => ({
+      channels: [...prevState.channels, channel],
+    }));
+  }
+
   setUsersChannels = (usersChannels) => {
     this.setState({
       usersChannels,
@@ -78,10 +113,18 @@ class MessageDashboard extends Component {
     });
   }
 
-  setMessages = (messages) => { // reuse this method
-    this.setState({
-      messages,
-    });
+  updateUsermetaChannels = () => {
+    sdk.db.getCollection('usersmeta')
+      .then((usersmeta) => {
+        return usersmeta.find((user) => user.userId === this.props.userId)
+      })
+      .then((usermeta) => {
+        return this.websocket.actions.updateResource(
+          'usersmeta',
+          usermeta._id,
+          { channels: this.state.usersChannels, currentChannel: this.state.usersCurrentChannel }
+        );
+      });
   }
 
   websocketActionRouter = (message) => {
@@ -155,10 +198,14 @@ class MessageDashboard extends Component {
   }
 
   create = (message) => {
-    if (message.collection === "messages") {
-      this.setState((prevState) => ({
-        messages: [...prevState.messages, message.response],
-      }));
+    const { collection } = message;
+
+    switch (collection) {
+      case 'messages':
+        this.addNewMessage(message.response);
+        break;
+      case 'rooms':
+        this.createChannelOrchestrator(message.response);
     }
   }
 
@@ -247,6 +294,7 @@ class MessageDashboard extends Component {
 
   handleChannelSubmit = (name) => {
     const message = {
+      channelType: 'rooms',
       userId: this.props.userId,
       name,
     }
