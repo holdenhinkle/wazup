@@ -8,7 +8,7 @@ import sdk from '../../lib';
 class MessageDashboard extends Component {
   state = {
     usersChannels: [],
-    usersCurrentChannel: { channelType: null, channelId: null, channelName: null },
+    usersCurrentChannel: { channelType: null, channelId: null },
     channels: [],
     messages: [],
   };
@@ -78,8 +78,8 @@ class MessageDashboard extends Component {
   }
 
   createChannelOrchestrator = (channel) => {
-    const { channelType, _id, name, userId } = channel;
-    const newChannel = { channelType, channelId: _id, channelName: name, userId };
+    const { channelType, _id } = channel;
+    const newChannel = { channelType, channelId: _id };
 
     this.addNewChannel(channel);
     this.setUsersCurrentChannel(newChannel);
@@ -226,6 +226,9 @@ class MessageDashboard extends Component {
         break;
       case 'rooms':
         this.createChannelOrchestrator(message.response);
+        break;
+      default:
+        return;
     }
   }
 
@@ -323,10 +326,28 @@ class MessageDashboard extends Component {
   }
 
   handleJoinChannel = (id) => {
+    const channel = this.state.channels.find((channel) => channel._id === id);
+
     // state make current channel
+    this.setUsersCurrentChannel(channel);
+
     // state add to usersChannels
+    this.addChannelToUsersChannels(channel);
+
     // db make current channel
     // db add to usersChannels
+    this.updateUsermetaChannels();
+
+    // get messsages
+    // code copied from componentDidMount
+    sdk.db.getCollection('messages')
+      .then((messages) => {
+        return messages.filter((message) => (
+          message.channelType === this.state.usersCurrentChannel.channelType &&
+          message.channelId === this.state.usersCurrentChannel.channelId
+        ))
+      })
+      .then((messages) => this.setMessages(messages));
   }
 
   handleLeaveChannel = (id) => {

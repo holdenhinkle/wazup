@@ -32,7 +32,7 @@ class App extends Component {
           name: null,
           online: false,
           channels: [],
-          currentChannel: { channelType: null, channelId: null, channelName: null, userId: null },
+          currentChannel: { channelType: null, channelId: null },
         }
 
         return sdk.db.createResource('usersmeta', data);
