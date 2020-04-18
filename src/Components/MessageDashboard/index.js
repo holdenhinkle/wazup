@@ -39,7 +39,8 @@ class MessageDashboard extends Component {
           this.setUsersChannels(usermeta.channels);
         }
 
-        if (usermeta.currentChannel.channelType && usermeta.currentChannel.channelId) {
+        // remove usermeta.currentChannel._id -- this is just for testing
+        if (usermeta.currentChannel.channelType && usermeta.currentChannel._id || usermeta.currentChannel.channelId) {
           this.setUsersCurrentChannel(usermeta.currentChannel);
         }
       });
@@ -118,9 +119,10 @@ class MessageDashboard extends Component {
     }));
   }
 
-  deleteChannelFromUsersChannels = (channel) => {
+  // remove  || currentChannel._id !== id -- this is just for testing
+  deleteChannelFromUsersChannels = (id) => {
     this.setState({
-      usersChannels: this.state.usersChannels.filter((currentChannel) => currentChannel !== channel),
+      usersChannels: this.state.usersChannels.filter((currentChannel) => currentChannel.id !== id || currentChannel._id !== id),
     });
   }
 
@@ -351,12 +353,37 @@ class MessageDashboard extends Component {
   }
 
   handleLeaveChannel = (id) => {
+    // get channel from channels
+    const channel = this.state.channels.find((channel) => channel._id === id);
 
+
+    // state remove from usersChannels
+    // state if channel is current channel and usersChannels > 0
+    //    => make first channel in usersChannels the current channel
+    //    => get messages for channel
+    //    => else
+    //       set currentChannel props to null
+    //       set messages to null
+    // db update usersmeta currentChannel and channels
   }
 
   handleChangeChannel = (id) => {
+    const channel = this.state.channels.find((channel) => channel._id === id);
     // state make current channel
+    this.setUsersCurrentChannel(channel);
     // db make current channel
+    this.updateUsermetaChannels();
+
+    // get messsages
+    // code copied from componentDidMount
+    sdk.db.getCollection('messages')
+      .then((messages) => {
+        return messages.filter((message) => (
+          message.channelType === this.state.usersCurrentChannel.channelType &&
+          message.channelId === this.state.usersCurrentChannel.channelId
+        ))
+      })
+      .then((messages) => this.setMessages(messages));
   }
 
   handleDeleteChannel = (id) => {
