@@ -65,10 +65,6 @@ const wsFactory = (ws) => ({
     });
   },
   joinChannel(usersInformationCollection, channelType, channelId) {
-    console.log('usersInformationCollection', usersInformationCollection)
-    console.log('channelType', channelType)
-    console.log('channelId', channelId)
-
     this.sendMessage({
       action: 'joinChannel',
       usersInformationCollection,
@@ -88,6 +84,15 @@ const wsFactory = (ws) => ({
     this.sendMessage({
       action: 'changeChannel',
       usersInformationCollection,
+      channelType,
+      channelId,
+    });
+  },
+  deleteChannel(usersInformationCollection, channelMessagesCollection, channelType, channelId) {
+    this.sendMessage({
+      action: 'deleteChannel',
+      usersInformationCollection,
+      channelMessagesCollection,
       channelType,
       channelId,
     });
