@@ -183,10 +183,10 @@ class MessageDashboard extends Component {
         this.joinChannel(message);
         break;
       case 'leaveChannel':
-        // leaveChannel();
+        this.leaveChannel(message);
         break;
       case 'changeChannel':
-        // changeChannel();
+        this.changeChannel(message);
         break;
       // case 'close':
       //   close(message);
@@ -306,7 +306,20 @@ class MessageDashboard extends Component {
   }
 
   leaveChannel = (message) => {
+    const { channels, currentChannel } = message.response;
+    this.setUsersChannels(channels);
+    this.setUsersCurrentChannel(currentChannel);
 
+    // get messsages
+    // code copied from componentDidMount
+    sdk.db.getCollection('messages')
+      .then((messages) => {
+        return messages.filter((message) => (
+          message.channelType === this.state.usersCurrentChannel.channelType &&
+          message.channelId === this.state.usersCurrentChannel.channelId
+        ))
+      })
+      .then((messages) => this.setMessages(messages));
   }
 
   changeChannel = (message) => {
@@ -381,56 +394,12 @@ class MessageDashboard extends Component {
     this.websocket.actions.leaveChannel('usersmeta', channelType, channelId);
   }
 
-  // handleLeaveChannel = (id) => {
-  //   const channel = this.state.channels.find((channel) => channel._id === id);
-
-  //   this.deleteChannelFromUsersChannels(id)
-  //   if (this.state.usersCurrentChannel._id === id && this.state.usersChannels.length > 0 || this.state.usersCurrentChannel.channelId === id && this.state.usersChannels.length > 0) {
-  //     const firstChannel = { channelType: this.state.usersChannels[0].channelType, channelId: this.state.usersChannels[0].channelId };
-  //     this.setUsersCurrentChannel(firstChannel);
-
-  //     // get messsages
-  //     // code copied from componentDidMount
-  //     sdk.db.getCollection('messages')
-  //       .then((messages) => {
-  //         return messages.filter((message) => (
-  //           message.channelType === this.state.usersCurrentChannel.channelType &&
-  //           message.channelId === this.state.usersCurrentChannel.channelId
-  //         ))
-  //       })
-  //       .then((messages) => this.setMessages(messages));
-  //   } else if (this.state.usersChannels.length === 0) {
-  //     this.setUsersCurrentChannel({ channelType: null, channeId: null });
-  //     this.setMessages([]);
-  //   }
-
-  //   this.updateUsermetaChannels();
-  // }
-
   handleChangeChannel = (channelType, channelId) => {
     this.websocket.actions.changeChannel('usersmeta', channelType, channelId);
   }
 
-  // handleChangeChannel = (id) => {
-  //   const channel = this.state.channels.find((channel) => channel._id === id);
-  //   // state make current channel
-  //   this.setUsersCurrentChannel(channel);
-  //   // db make current channel
-  //   this.updateUsermetaChannels();
-
-  //   // get messsages
-  //   // code copied from componentDidMount
-  //   sdk.db.getCollection('messages')
-  //     .then((messages) => {
-  //       return messages.filter((message) => (
-  //         message.channelType === this.state.usersCurrentChannel.channelType &&
-  //         message.channelId === this.state.usersCurrentChannel.channelId
-  //       ))
-  //     })
-  //     .then((messages) => this.setMessages(messages));
-  // }
-
   handleDeleteChannel = (id) => {
+    this.websocket.actions.deleteChannel('usersmeta', channelType, channelId);
   }
 
   render() {
