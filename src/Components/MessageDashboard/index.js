@@ -357,14 +357,46 @@ class MessageDashboard extends Component {
     const channel = this.state.channels.find((channel) => channel._id === id);
 
 
-    // state remove from usersChannels
+    // state remove channel from usersChannels
+    this.deleteChannelFromUsersChannels(id)
+
+    // if channel is current channel and usersChannels > 0
+
+    // if channel is not current channel
+    //    state - remove channel from usersChannels
+    //    db - remove channel from usersChannels
+
     // state if channel is current channel and usersChannels > 0
     //    => make first channel in usersChannels the current channel
     //    => get messages for channel
     //    => else
     //       set currentChannel props to null
     //       set messages to null
+
+    if (this.state.usersCurrentChannel._id === id && this.state.usersChannels.length > 0 || this.state.usersCurrentChannel.channelId === id && this.state.usersChannels.length > 0) {
+      // update currentChannel with first channel in usersChannels
+      const firstChannel = { channelType: this.state.usersChannels[0].channelType, channelId: this.state.usersChannels[0].channelId };
+      this.setUsersCurrentChannel(firstChannel);
+
+      // get messsages
+      // code copied from componentDidMount
+      sdk.db.getCollection('messages')
+        .then((messages) => {
+          return messages.filter((message) => (
+            message.channelType === this.state.usersCurrentChannel.channelType &&
+            message.channelId === this.state.usersCurrentChannel.channelId
+          ))
+        })
+        .then((messages) => this.setMessages(messages));
+    } else if (this.state.usersChannels.length === 0) {
+      this.setUsersCurrentChannel({ channelType: null, channeId: null });
+      this.setMessages([]);
+      // } else {
+      //   this.setUsersCurrentChannel({ channelType: null, channeId: null });
+      //   this.setMessages([]);
+    }
     // db update usersmeta currentChannel and channels
+    this.updateUsermetaChannels();
   }
 
   handleChangeChannel = (id) => {
@@ -387,7 +419,6 @@ class MessageDashboard extends Component {
   }
 
   handleDeleteChannel = (id) => {
-
   }
 
   render() {
