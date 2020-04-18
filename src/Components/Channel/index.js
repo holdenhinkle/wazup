@@ -16,8 +16,9 @@ class Channel extends Component {
     this.props.handleDeleteChannel(this.props.channel._id)
   }
 
+  // remove || channel._id === usersCurrentChannel._id -- this is just for testing
   checkCurrentChannel = (channel, usersCurrentChannel) => {
-    return channel.channelType === usersCurrentChannel.channelType && channel._id === usersCurrentChannel.channelId;
+    return channel.channelType === usersCurrentChannel.channelType && channel._id === usersCurrentChannel.channelId || channel._id === usersCurrentChannel._id;
   }
 
   checkViewable = (channel, usersChannels, usersCurrentChannel) => {
@@ -29,8 +30,9 @@ class Channel extends Component {
     return !this.checkLeavable(channel, usersChannels);
   }
 
+  // remove || channel._id === userChannel._id -- this is just for testing
   checkLeavable = (channel, usersChannels) => {
-    return usersChannels.some((userChannel) => channel.channelType === userChannel.channelType && channel._id === userChannel.channelId);
+    return usersChannels.some((userChannel) => channel.channelType === userChannel.channelType && channel._id === userChannel.channelId || channel._id === userChannel._id);
   }
 
   checkDeletable = (userId, channel) => {
