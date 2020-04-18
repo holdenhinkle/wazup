@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class Channel extends Component {
   onJoinChannel = () => {
-    this.props.handleJoinChannel(this.props.channel._id);
+    this.props.handleJoinChannel(this.props.channel.channelType, this.props.channel._id);
   }
   onLeaveChannel = () => {
     this.props.handleLeaveChannel(this.props.channel._id)

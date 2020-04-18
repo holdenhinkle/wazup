@@ -108,6 +108,7 @@ class MessageDashboard extends Component {
   }
 
   setUsersCurrentChannel = (usersCurrentChannel) => {
+    console.log('usersCurrentChannel', usersCurrentChannel);
     this.setState({
       usersCurrentChannel,
     });
@@ -179,7 +180,7 @@ class MessageDashboard extends Component {
         this.joinUsersChannels(message);
         break;
       case 'joinChannel':
-        // joinChannel();
+        this.joinChannel(message);
         break;
       case 'leaveChannel':
         // leaveChannel();
@@ -284,9 +285,24 @@ class MessageDashboard extends Component {
   }
 
   joinChannel = (message) => {
-    // state - update usersChannels
-    // state - update usersCurrentChannels
-    // state - get new messages
+    const { channelType, channelId } = message;
+    const channel = { channelType, channelId };
+
+    this.addChannelToUsersChannels(channel);
+    this.setUsersCurrentChannel(channel);
+
+    // get messsages
+    // code copied from componentDidMount
+    sdk.db.getCollection('messages')
+      .then((messages) => {
+        return messages.filter((message) => (
+          message.channelType === this.state.usersCurrentChannel.channelType &&
+          message.channelId === this.state.usersCurrentChannel.channelId
+        ))
+      })
+      .then((messages) => this.setMessages(messages));
+
+    this.updateUsermetaChannels();
   }
 
   leaveChannel = (message) => {
@@ -342,39 +358,12 @@ class MessageDashboard extends Component {
     this.websocket.actions.createResource('rooms', message);
   }
 
-  handleJoinChannel = (channelId) => {
-    const { channelType } = this.state.channels.find((channel) => channel._id === id);
-    this.websocket.actions.joinChannel('usersmeta', channelType, channelId)
+  handleJoinChannel = (channelType, channelId) => {
+    this.websocket.actions.joinChannel('usersmeta', channelType, channelId);
   }
 
-  // handleJoinChannel = (id) => {
-  //   const channel = this.state.channels.find((channel) => channel._id === id);
-
-  //   // state make current channel
-  //   this.setUsersCurrentChannel(channel);
-
-  //   // state add to usersChannels
-  //   this.addChannelToUsersChannels(channel);
-
-  //   // db make current channel
-  //   // db add to usersChannels
-  //   this.updateUsermetaChannels();
-
-  //   // get messsages
-  //   // code copied from componentDidMount
-  //   sdk.db.getCollection('messages')
-  //     .then((messages) => {
-  //       return messages.filter((message) => (
-  //         message.channelType === this.state.usersCurrentChannel.channelType &&
-  //         message.channelId === this.state.usersCurrentChannel.channelId
-  //       ))
-  //     })
-  //     .then((messages) => this.setMessages(messages));
-  // }
-
-  handleLeaveChannel = (channelId) => {
-    const { channelType } = this.state.channels.find((channel) => channel._id === id);
-    this.websocket.actions.leaveChannel('usersmeta', channelType, channelId)
+  handleLeaveChannel = (channelType, channelId) => {
+    this.websocket.actions.leaveChannel('usersmeta', channelType, channelId);
   }
 
   // handleLeaveChannel = (id) => {
@@ -403,9 +392,8 @@ class MessageDashboard extends Component {
   //   this.updateUsermetaChannels();
   // }
 
-  handleChangeChannel = (channelId) => {
-    const { channelType } = this.state.channels.find((channel) => channel._id === id);
-    this.websocket.actions.changeChannel('usersmeta', channelType, channelId)
+  handleChangeChannel = (channelType, channelId) => {
+    this.websocket.actions.changeChannel('usersmeta', channelType, channelId);
   }
 
   // handleChangeChannel = (id) => {
