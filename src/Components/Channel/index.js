@@ -5,15 +5,15 @@ class Channel extends Component {
     this.props.handleJoinChannel(this.props.channel.channelType, this.props.channel._id);
   }
   onLeaveChannel = () => {
-    this.props.handleLeaveChannel(this.props.channel._id)
+    this.props.handleLeaveChannel(this.props.channel.channelType, this.props.channel._id)
   }
 
   onChangeChannel = () => {
-    this.props.handleChangeChannel(this.props.channel._id)
+    this.props.handleChangeChannel(this.props.channel.channelType, this.props.channel._id)
   }
 
   onDeleteChannel = () => {
-    this.props.handleDeleteChannel(this.props.channel._id)
+    this.props.handleDeleteChannel(this.props.channel.channelType, this.props.channel._id)
   }
 
   // remove || channel._id === usersCurrentChannel._id -- this is just for testing

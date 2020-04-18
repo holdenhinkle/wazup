@@ -310,8 +310,23 @@ class MessageDashboard extends Component {
   }
 
   changeChannel = (message) => {
-    // state - update usersCurrentChannels
-    // state - get new messages
+    const { channelType, channelId } = message;
+    const channel = { channelType, channelId };
+
+    this.setUsersCurrentChannel(channel);
+
+    // get messsages
+    // code copied from componentDidMount
+    sdk.db.getCollection('messages')
+      .then((messages) => {
+        return messages.filter((message) => (
+          message.channelType === this.state.usersCurrentChannel.channelType &&
+          message.channelId === this.state.usersCurrentChannel.channelId
+        ))
+      })
+      .then((messages) => this.setMessages(messages));
+
+    this.updateUsermetaChannels();
   }
 
   handleOnSubmit = (text) => {
