@@ -283,6 +283,21 @@ class MessageDashboard extends Component {
     console.log(`${action}: ${usersChannels.length} channel(s) joined`);
   }
 
+  joinChannel = (message) => {
+    // state - update usersChannels
+    // state - update usersCurrentChannels
+    // state - get new messages
+  }
+
+  leaveChannel = (message) => {
+
+  }
+
+  changeChannel = (message) => {
+    // state - update usersCurrentChannels
+    // state - get new messages
+  }
+
   handleOnSubmit = (text) => {
     const message = {
       userId: this.props.userId,
@@ -327,96 +342,90 @@ class MessageDashboard extends Component {
     this.websocket.actions.createResource('rooms', message);
   }
 
-  handleJoinChannel = (id) => {
-    const channel = this.state.channels.find((channel) => channel._id === id);
-
-    // state make current channel
-    this.setUsersCurrentChannel(channel);
-
-    // state add to usersChannels
-    this.addChannelToUsersChannels(channel);
-
-    // db make current channel
-    // db add to usersChannels
-    this.updateUsermetaChannels();
-
-    // get messsages
-    // code copied from componentDidMount
-    sdk.db.getCollection('messages')
-      .then((messages) => {
-        return messages.filter((message) => (
-          message.channelType === this.state.usersCurrentChannel.channelType &&
-          message.channelId === this.state.usersCurrentChannel.channelId
-        ))
-      })
-      .then((messages) => this.setMessages(messages));
+  handleJoinChannel = (channelId) => {
+    const { channelType } = this.state.channels.find((channel) => channel._id === id);
+    this.websocket.actions.joinChannel('usersmeta', channelType, channelId)
   }
 
-  handleLeaveChannel = (id) => {
-    // get channel from channels
-    const channel = this.state.channels.find((channel) => channel._id === id);
+  // handleJoinChannel = (id) => {
+  //   const channel = this.state.channels.find((channel) => channel._id === id);
 
+  //   // state make current channel
+  //   this.setUsersCurrentChannel(channel);
 
-    // state remove channel from usersChannels
-    this.deleteChannelFromUsersChannels(id)
+  //   // state add to usersChannels
+  //   this.addChannelToUsersChannels(channel);
 
-    // if channel is current channel and usersChannels > 0
+  //   // db make current channel
+  //   // db add to usersChannels
+  //   this.updateUsermetaChannels();
 
-    // if channel is not current channel
-    //    state - remove channel from usersChannels
-    //    db - remove channel from usersChannels
+  //   // get messsages
+  //   // code copied from componentDidMount
+  //   sdk.db.getCollection('messages')
+  //     .then((messages) => {
+  //       return messages.filter((message) => (
+  //         message.channelType === this.state.usersCurrentChannel.channelType &&
+  //         message.channelId === this.state.usersCurrentChannel.channelId
+  //       ))
+  //     })
+  //     .then((messages) => this.setMessages(messages));
+  // }
 
-    // state if channel is current channel and usersChannels > 0
-    //    => make first channel in usersChannels the current channel
-    //    => get messages for channel
-    //    => else
-    //       set currentChannel props to null
-    //       set messages to null
-
-    if (this.state.usersCurrentChannel._id === id && this.state.usersChannels.length > 0 || this.state.usersCurrentChannel.channelId === id && this.state.usersChannels.length > 0) {
-      // update currentChannel with first channel in usersChannels
-      const firstChannel = { channelType: this.state.usersChannels[0].channelType, channelId: this.state.usersChannels[0].channelId };
-      this.setUsersCurrentChannel(firstChannel);
-
-      // get messsages
-      // code copied from componentDidMount
-      sdk.db.getCollection('messages')
-        .then((messages) => {
-          return messages.filter((message) => (
-            message.channelType === this.state.usersCurrentChannel.channelType &&
-            message.channelId === this.state.usersCurrentChannel.channelId
-          ))
-        })
-        .then((messages) => this.setMessages(messages));
-    } else if (this.state.usersChannels.length === 0) {
-      this.setUsersCurrentChannel({ channelType: null, channeId: null });
-      this.setMessages([]);
-      // } else {
-      //   this.setUsersCurrentChannel({ channelType: null, channeId: null });
-      //   this.setMessages([]);
-    }
-    // db update usersmeta currentChannel and channels
-    this.updateUsermetaChannels();
+  handleLeaveChannel = (channelId) => {
+    const { channelType } = this.state.channels.find((channel) => channel._id === id);
+    this.websocket.actions.leaveChannel('usersmeta', channelType, channelId)
   }
 
-  handleChangeChannel = (id) => {
-    const channel = this.state.channels.find((channel) => channel._id === id);
-    // state make current channel
-    this.setUsersCurrentChannel(channel);
-    // db make current channel
-    this.updateUsermetaChannels();
+  // handleLeaveChannel = (id) => {
+  //   const channel = this.state.channels.find((channel) => channel._id === id);
 
-    // get messsages
-    // code copied from componentDidMount
-    sdk.db.getCollection('messages')
-      .then((messages) => {
-        return messages.filter((message) => (
-          message.channelType === this.state.usersCurrentChannel.channelType &&
-          message.channelId === this.state.usersCurrentChannel.channelId
-        ))
-      })
-      .then((messages) => this.setMessages(messages));
+  //   this.deleteChannelFromUsersChannels(id)
+  //   if (this.state.usersCurrentChannel._id === id && this.state.usersChannels.length > 0 || this.state.usersCurrentChannel.channelId === id && this.state.usersChannels.length > 0) {
+  //     const firstChannel = { channelType: this.state.usersChannels[0].channelType, channelId: this.state.usersChannels[0].channelId };
+  //     this.setUsersCurrentChannel(firstChannel);
+
+  //     // get messsages
+  //     // code copied from componentDidMount
+  //     sdk.db.getCollection('messages')
+  //       .then((messages) => {
+  //         return messages.filter((message) => (
+  //           message.channelType === this.state.usersCurrentChannel.channelType &&
+  //           message.channelId === this.state.usersCurrentChannel.channelId
+  //         ))
+  //       })
+  //       .then((messages) => this.setMessages(messages));
+  //   } else if (this.state.usersChannels.length === 0) {
+  //     this.setUsersCurrentChannel({ channelType: null, channeId: null });
+  //     this.setMessages([]);
+  //   }
+
+  //   this.updateUsermetaChannels();
+  // }
+
+  handleChangeChannel = (channelId) => {
+    const { channelType } = this.state.channels.find((channel) => channel._id === id);
+    this.websocket.actions.changeChannel('usersmeta', channelType, channelId)
   }
+
+  // handleChangeChannel = (id) => {
+  //   const channel = this.state.channels.find((channel) => channel._id === id);
+  //   // state make current channel
+  //   this.setUsersCurrentChannel(channel);
+  //   // db make current channel
+  //   this.updateUsermetaChannels();
+
+  //   // get messsages
+  //   // code copied from componentDidMount
+  //   sdk.db.getCollection('messages')
+  //     .then((messages) => {
+  //       return messages.filter((message) => (
+  //         message.channelType === this.state.usersCurrentChannel.channelType &&
+  //         message.channelId === this.state.usersCurrentChannel.channelId
+  //       ))
+  //     })
+  //     .then((messages) => this.setMessages(messages));
+  // }
 
   handleDeleteChannel = (id) => {
   }
