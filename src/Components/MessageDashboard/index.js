@@ -279,6 +279,7 @@ class MessageDashboard extends Component {
     console.log(`${action}: ${usersChannels.length} channel(s) joined`);
   }
 
+  // done
   joinChannel = (message) => {
     if (message.userId === this.props.userId && message.response) {
       const { channels, currentChannel } = message.response;
@@ -323,10 +324,8 @@ class MessageDashboard extends Component {
   }
 
   changeChannel = (message) => {
-    const { channelType, channelId } = message;
-    const channel = { channelType, channelId };
-
-    this.setUsersCurrentChannel(channel);
+    const { currentChannel } = message.response;
+    this.setUsersCurrentChannel(currentChannel);
 
     // get messsages
     // code copied from componentDidMount
@@ -338,8 +337,6 @@ class MessageDashboard extends Component {
         ))
       })
       .then((messages) => this.setMessages(messages));
-
-    this.updateUsermetaChannels();
   }
 
   deleteChannel = (message) => {
