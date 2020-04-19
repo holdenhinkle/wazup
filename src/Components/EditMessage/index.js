@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class EditMessage extends Component {
   state = {
-    text: this.props.text,
+    text: this.props.message.text,
   }
 
   handleOnChange = (e) => {

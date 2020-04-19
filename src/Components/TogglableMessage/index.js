@@ -24,16 +24,14 @@ class TogglableMessage extends Component {
       <div>
         {this.state.edit ?
           <EditMessage
-            text={message.text}
-            id={message._id}
+            message={message}
             handleToggleEdit={this.handleToggleEdit}
             handleUpdateMessage={handleUpdateMessage}
             handleOverwriteMessage={handleOverwriteMessage}
           />
           :
           <Message
-            text={message.text}
-            id={message._id}
+            message={message}
             handleToggleEdit={this.handleToggleEdit}
             handleDeleteMessage={handleDeleteMessage}
           />

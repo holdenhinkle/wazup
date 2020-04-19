@@ -363,6 +363,7 @@ class MessageDashboard extends Component {
 
   handleOnSubmit = (text) => {
     const message = {
+      userName: this.props.userName,
       userId: this.props.userId,
       channelType: this.state.usersCurrentChannel.channelType,
       channelId: this.state.usersCurrentChannel.channelId,
