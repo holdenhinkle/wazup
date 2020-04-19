@@ -251,9 +251,6 @@ class MessageDashboard extends Component {
   }
 
   patch = (message) => {
-    console.log('this.state.messages', this.state.messages);
-    console.log('message', message);
-
     if (message.collection === 'messages') {
       this.setState((prevState) => ({
         messages: prevState.messages.map((existingMessage) => {
