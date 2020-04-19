@@ -341,16 +341,13 @@ class MessageDashboard extends Component {
   }
 
   deleteChannel = (message) => {
-    if (message.userId === this.props.userId && message.response) {
-      const { channelType, channelId } = message;
-      const { channels, currentChannel } = message.response;
+    const { channelType, channelId } = message;
+    const { channels, currentChannel } = message.response;
 
-      this.setUsersChannels(channels);
-      this.setUsersCurrentChannel(currentChannel);
-      this.removeChannel({ channelType, channelId });
-    } else {
-      // handle what happens when someone else delete a channel that you're subscribed/on
-    }
+    this.setUsersChannels(channels);
+    this.setUsersCurrentChannel(currentChannel);
+    this.removeChannel({ channelType, channelId });
+
 
     // get messsages
     // fix this someday -- you only have to get new messages if the currentChannel has been updated
