@@ -7,13 +7,19 @@ import sdk from '../../lib';
 class App extends Component {
   state = {
     loggedIn: false,
+    username: null,
     userId: null,
   }
 
   handleLoginSubmit = async ({ email, password }) => {
     sdk.auth.login(email, password)
-      .then((res) => {
-        this.setUserId(res.id);
+      .then((userId) => {
+        const usersmeta = sdk.db.getResource('usersmeta')
+        return usersmeta.find(usermeta => usermeta.userId === userId);
+      })
+      .then((usermeta) => {
+        this.setUsername(usermeta.username);
+        this.setUserId(usermeta.userId);
         this.toggleLoggedIn();
       })
       .catch((e) => {
@@ -21,16 +27,15 @@ class App extends Component {
       });
   }
 
-  handleRegisterSubmit = ({ email, password }) => {
+  handleRegisterSubmit = ({ username, email, password }) => {
     sdk.auth.register(email, password)
       .then(() => {
         return sdk.auth.login(email, password);
       })
       .then((loginRes) => {
         const data = {
+          username,
           userId: loginRes.id,
-          name: null,
-          online: false,
           channels: [],
           currentChannel: { channelType: null, channelId: null },
         }
@@ -38,12 +43,19 @@ class App extends Component {
         return sdk.db.createResource('usersmeta', data);
       })
       .then((usersmetaRes) => {
+        this.setUsername(usersmetaRes.username);
         this.setUserId(usersmetaRes.userId);
         this.toggleLoggedIn();
       })
       .catch((e) => {
         console.log(e);
       });
+  }
+
+  setUsername = (username) => {
+    this.setState({
+      username,
+    });
   }
 
   setUserId = (userId) => {
