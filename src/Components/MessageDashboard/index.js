@@ -280,30 +280,35 @@ class MessageDashboard extends Component {
   }
 
   joinChannel = (message) => {
-    const { channelType, channelId } = message;
-    const channel = { channelType, channelId };
+    if (message.userId === this.props.userId && message.response) {
+      const { channels, currentChannel } = message.response;
 
-    this.addChannelToUsersChannels(channel);
-    this.setUsersCurrentChannel(channel);
+      this.setUsersChannels(channels);
+      this.setUsersCurrentChannel(currentChannel);
 
-    // get messsages
-    // code copied from componentDidMount
-    sdk.db.getCollection('messages')
-      .then((messages) => {
-        return messages.filter((message) => (
-          message.channelType === this.state.usersCurrentChannel.channelType &&
-          message.channelId === this.state.usersCurrentChannel.channelId
-        ))
-      })
-      .then((messages) => this.setMessages(messages));
-
-    this.updateUsermetaChannels();
+      // get messsages
+      // code copied from componentDidMount
+      sdk.db.getCollection('messages')
+        .then((messages) => {
+          return messages.filter((message) => (
+            message.channelType === this.state.usersCurrentChannel.channelType &&
+            message.channelId === this.state.usersCurrentChannel.channelId
+          ))
+        })
+        .then((messages) => this.setMessages(messages));
+    } else {
+      console.log(message);
+    }
   }
 
   leaveChannel = (message) => {
-    const { channels, currentChannel } = message.response;
-    this.setUsersChannels(channels);
-    this.setUsersCurrentChannel(currentChannel);
+    if (message.userId === this.props.userId && message.response) {
+      const { channels, currentChannel } = message.response;
+      this.setUsersChannels(channels);
+      this.setUsersCurrentChannel(currentChannel);
+    } else {
+
+    }
 
     // get messsages
     // code copied from componentDidMount
@@ -345,20 +350,20 @@ class MessageDashboard extends Component {
       this.setUsersChannels(channels);
       this.setUsersCurrentChannel(currentChannel);
       this.removeChannel({ channelType, channelId });
-
-      // get messsages
-      // code copied from componentDidMount
-      sdk.db.getCollection('messages')
-        .then((messages) => {
-          return messages.filter((message) => (
-            message.channelType === this.state.usersCurrentChannel.channelType &&
-            message.channelId === this.state.usersCurrentChannel.channelId
-          ))
-        })
-        .then((messages) => this.setMessages(messages));
     } else {
       // handle what happens when someone else delete a channel that you're subscribed/on
     }
+
+    // get messsages
+    // code copied from componentDidMount
+    sdk.db.getCollection('messages')
+      .then((messages) => {
+        return messages.filter((message) => (
+          message.channelType === this.state.usersCurrentChannel.channelType &&
+          message.channelId === this.state.usersCurrentChannel.channelId
+        ))
+      })
+      .then((messages) => this.setMessages(messages));
   }
 
   handleOnSubmit = (text) => {
@@ -451,9 +456,13 @@ class MessageDashboard extends Component {
             onUpdateMessage={this.handleUpdateMessage}
             onOverwriteMessage={this.handleOverwriteMessage}
           />
-          <AddMessageForm
-            onSubmit={this.handleOnSubmit}
-          />
+          {this.state.usersCurrentChannel.channelType === null && this.state.usersCurrentChannel.channelId === null ?
+            <p>Create a join a channel to sent a message!</p>
+            :
+            <AddMessageForm
+              onSubmit={this.handleOnSubmit}
+            />
+          }
         </div>
       </div>
     )
