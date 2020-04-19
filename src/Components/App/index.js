@@ -77,10 +77,16 @@ class App extends Component {
       <div className="App" >
         {
           this.state.loggedIn ?
-            <MessageDashboard
-              toggleLoggedIn={this.toggleLoggedIn}
-              userId={this.state.userId}
-            />
+            <div>
+              <div>
+                <p>Welcome {this.state.username}!</p>
+                <button onClick={this.toggleLoggedIn}>Logout</button>
+              </div>
+              <MessageDashboard
+                userName={this.state.username}
+                userId={this.state.userId}
+              />
+            </div>
             :
             <div>
               <div>
