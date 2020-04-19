@@ -13,9 +13,9 @@ class App extends Component {
 
   handleLoginSubmit = async ({ email, password }) => {
     sdk.auth.login(email, password)
-      .then((userId) => {
-        const usersmeta = sdk.db.getResource('usersmeta')
-        return usersmeta.find(usermeta => usermeta.userId === userId);
+      .then(async (res) => {
+        const usersmeta = await sdk.db.getCollection('usersmeta');
+        return usersmeta.find(usermeta => usermeta.userId === res.id);
       })
       .then((usermeta) => {
         this.setUsername(usermeta.username);
@@ -51,6 +51,8 @@ class App extends Component {
         console.log(e);
       });
   }
+
+  // unfreezeObject = (obj) => JSON.parse(JSON.stringify(obj));
 
   setUsername = (username) => {
     this.setState({
