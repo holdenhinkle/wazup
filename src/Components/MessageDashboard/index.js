@@ -78,15 +78,18 @@ class MessageDashboard extends Component {
     });
   }
 
-  createChannelOrchestrator = (channel) => {
-    const { channelType, _id } = channel;
+  createChannelOrchestrator = (message) => {
+    const { channelType, _id } = message.response;
     const newChannel = { channelType, channelId: _id };
 
-    this.addNewChannel(channel);
-    this.setUsersCurrentChannel(newChannel);
-    this.addChannelToUsersChannels(newChannel);
-    this.updateUsermetaChannels();
-    this.clearMessages();
+    this.addNewChannel(message.response);
+
+    if (message.response.userId === this.props.userId) {
+      this.setUsersCurrentChannel(newChannel);
+      this.addChannelToUsersChannels(newChannel);
+      this.updateUsermetaChannels();
+      this.clearMessages();
+    }
   }
 
   setChannels = (channels) => { // reuse this method
@@ -223,7 +226,7 @@ class MessageDashboard extends Component {
         this.addNewMessage(message.response);
         break;
       case 'rooms':
-        this.createChannelOrchestrator(message.response);
+        this.createChannelOrchestrator(message);
         break;
       default:
         return;
