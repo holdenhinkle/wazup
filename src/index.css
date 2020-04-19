@@ -11,3 +11,19 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#message-dashboard {
+  display: flex;
+  margin: 0 auto;
+  width: 1000px;
+}
+
+#channels-wrapper {
+  width: 33.3333%;
+}
+
+#messages-wrapper {
+  width: 66.6666;
+}
+
+
