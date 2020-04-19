@@ -61,9 +61,12 @@ class MessageDashboard extends Component {
   }
 
   addNewMessage = (message) => {
-    this.setState((prevState) => ({
-      messages: [...prevState.messages, message],
-    }));
+    if (this.state.usersCurrentChannel.channelType === message.response.channelType &&
+      this.state.usersCurrentChannel.channelId === message.response.channelId) {
+      this.setState((prevState) => ({
+        messages: [...prevState.messages, message.response],
+      }));
+    }
   }
 
   setMessages = (messages) => { // reuse this method
@@ -223,7 +226,7 @@ class MessageDashboard extends Component {
 
     switch (collection) {
       case 'messages':
-        this.addNewMessage(message.response);
+        this.addNewMessage(message);
         break;
       case 'rooms':
         this.createChannelOrchestrator(message);
