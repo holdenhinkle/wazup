@@ -11,9 +11,9 @@ class EditMessage extends Component {
 
   handleEditMessage = (e) => {
     if (e.target.value === 'update') {
-      this.props.handleUpdateMessage(this.props.id, this.state.text);
+      this.props.handleUpdateMessage(this.props.message._id, this.state.text);
     } else if (e.target.value === 'overwrite') {
-      this.props.handleOverwriteMessage(this.props.id, this.state.text);
+      this.props.handleOverwriteMessage(this.props.message._id, this.state.text);
     }
 
     this.props.handleToggleEdit();
