@@ -39,8 +39,7 @@ class MessageDashboard extends Component {
           this.setUsersChannels(usermeta.channels);
         }
 
-        // remove usermeta.currentChannel._id -- this is just for testing
-        if (usermeta.currentChannel.channelType && usermeta.currentChannel._id || usermeta.currentChannel.channelId) {
+        if (usermeta.currentChannel.channelType && usermeta.currentChannel.channelId) {
           this.setUsersCurrentChannel(usermeta.currentChannel);
         }
       });
@@ -102,14 +101,9 @@ class MessageDashboard extends Component {
   }
 
   removeChannel = (channel) => {
-    console.log('channel to remove', channel);
-    console.log('channels BEFORE delete', this.state.channels);
-
     this.setState({
       channels: this.state.channels.filter((currentChannel) => currentChannel.channelType === channel.channelType && currentChannel._id !== channel.channelId),
     });
-
-    console.log('channels AFTER delete', this.state.channels);
   }
 
   addNewChannel = (channel) => {
@@ -125,7 +119,6 @@ class MessageDashboard extends Component {
   }
 
   setUsersCurrentChannel = (usersCurrentChannel) => {
-    console.log('usersCurrentChannel', usersCurrentChannel);
     this.setState({
       usersCurrentChannel,
     });
@@ -137,7 +130,6 @@ class MessageDashboard extends Component {
     }));
   }
 
-  // remove  || currentChannel._id !== id -- this is just for testing
   deleteChannelFromUsersChannels = (id) => {
     this.setState({
       usersChannels: this.state.usersChannels.filter((currentChannel) => currentChannel.id !== id || currentChannel._id !== id),
@@ -205,11 +197,7 @@ class MessageDashboard extends Component {
       //   close(message);
       //   break;
       default:
-        console.log('websocketActionRouter default case');
-      // wss.router.sendMessage(client, {
-      //   action: 'error',
-      //   message: 'Error: valid action not provided.'
-      // });
+        console.log('Websocket message received but action not specified.');
     }
   }
 

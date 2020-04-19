@@ -52,8 +52,6 @@ class App extends Component {
       });
   }
 
-  // unfreezeObject = (obj) => JSON.parse(JSON.stringify(obj));
-
   setUsername = (username) => {
     this.setState({
       username,
