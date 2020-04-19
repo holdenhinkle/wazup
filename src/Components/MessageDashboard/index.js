@@ -425,29 +425,35 @@ class MessageDashboard extends Component {
     const { messages, channels, usersChannels, usersCurrentChannel } = this.state;
 
     return (
-      <div className="messageDashboard">
-        <ChannelList
-          userId={this.props.userId}
-          channels={channels}
-          usersChannels={usersChannels}
-          usersCurrentChannel={usersCurrentChannel}
-          onJoinChannel={this.handleJoinChannel}
-          onLeaveChannel={this.handleLeaveChannel}
-          onChangeChannel={this.handleChangeChannel}
-          onDeleteChannel={this.handleDeleteChannel}
-        />
-        <MessageList
-          messages={messages}
-          onDeleteMessage={this.handleDeleteMessage}
-          onUpdateMessage={this.handleUpdateMessage}
-          onOverwriteMessage={this.handleOverwriteMessage}
-        />
-        <AddMessageForm
-          onSubmit={this.handleOnSubmit}
-        />
-        <AddChannelForm
-          onSubmit={this.handleChannelSubmit}
-        />
+      <div id="message-dashboard">
+        <div id="channels-wrapper">
+          <h1>Channels:</h1>
+          <ChannelList
+            userId={this.props.userId}
+            channels={channels}
+            usersChannels={usersChannels}
+            usersCurrentChannel={usersCurrentChannel}
+            onJoinChannel={this.handleJoinChannel}
+            onLeaveChannel={this.handleLeaveChannel}
+            onChangeChannel={this.handleChangeChannel}
+            onDeleteChannel={this.handleDeleteChannel}
+          />
+          <AddChannelForm
+            onSubmit={this.handleChannelSubmit}
+          />
+        </div>
+        <div id="messages-wrapper">
+          <h1>Messages:</h1>
+          <MessageList
+            messages={messages}
+            onDeleteMessage={this.handleDeleteMessage}
+            onUpdateMessage={this.handleUpdateMessage}
+            onOverwriteMessage={this.handleOverwriteMessage}
+          />
+          <AddMessageForm
+            onSubmit={this.handleOnSubmit}
+          />
+        </div>
       </div>
     )
   }
