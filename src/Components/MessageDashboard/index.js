@@ -95,6 +95,17 @@ class MessageDashboard extends Component {
     });
   }
 
+  removeChannel = (channel) => {
+    console.log('channel', channel);
+
+    this.setState({
+      channels: this.state.channels.filter((currentChannel) => {
+        console.log('currentChannel', currentChannel);
+        return currentChannel.channelType !== channel.channelType && currentChannel._id !== channel.channelId
+      }),
+    });
+  }
+
   addNewChannel = (channel) => {
     this.setState((prevState) => ({
       channels: [...prevState.channels, channel],
@@ -142,16 +153,9 @@ class MessageDashboard extends Component {
   }
 
   websocketActionRouter = (message) => {
-    console.log('websocketActionRouter message', message); // for debugging
     const { action } = message;
 
     switch (action) {
-      case 'query': // not in use
-        this.query(message);
-        break;
-      // case 'getOne':
-      //   getOne(message);
-      //   break;
       case 'getAll':
         this.getAll(message);
         break;
@@ -188,6 +192,9 @@ class MessageDashboard extends Component {
       case 'changeChannel':
         this.changeChannel(message);
         break;
+      case 'deleteChannel':
+        this.deleteChannel(message);
+        break;
       // case 'close':
       //   close(message);
       //   break;
@@ -198,18 +205,6 @@ class MessageDashboard extends Component {
       //   message: 'Error: valid action not provided.'
       // });
     }
-  }
-
-  query = (message) => { // not in use
-    // if (message.collection === "messages") {
-    //   this.setState((prevState) => ({
-    //     // messages: [...prevState.messages, ...message.response],
-    //   }));
-    // } else if (message.collection === "channels") {
-    //   this.setState((prevState) => ({
-    //     // messages: [...prevState.messages, ...message.response],
-    //   }));
-    // }
   }
 
   getAll = (message) => {
@@ -342,6 +337,30 @@ class MessageDashboard extends Component {
     this.updateUsermetaChannels();
   }
 
+  deleteChannel = (message) => {
+    if (message.userId === this.props.userId && message.response) {
+      const { channelType, channelId } = message;
+      const { channels, currentChannel } = message.response;
+
+      this.setUsersChannels(channels);
+      this.setUsersCurrentChannel(currentChannel);
+      this.removeChannel({ channelType, channelId });
+
+      // get messsages
+      // code copied from componentDidMount
+      sdk.db.getCollection('messages')
+        .then((messages) => {
+          return messages.filter((message) => (
+            message.channelType === this.state.usersCurrentChannel.channelType &&
+            message.channelId === this.state.usersCurrentChannel.channelId
+          ))
+        })
+        .then((messages) => this.setMessages(messages));
+    } else {
+      // handle what happens when someone else delete a channel that you're subscribed/on
+    }
+  }
+
   handleOnSubmit = (text) => {
     const message = {
       userId: this.props.userId,
@@ -398,8 +417,8 @@ class MessageDashboard extends Component {
     this.websocket.actions.changeChannel('usersmeta', channelType, channelId);
   }
 
-  handleDeleteChannel = (id) => {
-    this.websocket.actions.deleteChannel('usersmeta', channelType, channelId);
+  handleDeleteChannel = (channelType, channelId) => {
+    this.websocket.actions.deleteChannel('usersmeta', 'messages', channelType, channelId);
   }
 
   render() {
@@ -407,7 +426,6 @@ class MessageDashboard extends Component {
 
     return (
       <div className="messageDashboard">
-        <button onClick={this.props.toggleLoggedIn}>Logout</button>
         <ChannelList
           userId={this.props.userId}
           channels={channels}
