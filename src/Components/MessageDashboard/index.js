@@ -96,14 +96,14 @@ class MessageDashboard extends Component {
   }
 
   removeChannel = (channel) => {
-    console.log('channel', channel);
+    console.log('channel to remove', channel);
+    console.log('channels BEFORE delete', this.state.channels);
 
     this.setState({
-      channels: this.state.channels.filter((currentChannel) => {
-        console.log('currentChannel', currentChannel);
-        return currentChannel.channelType !== channel.channelType && currentChannel._id !== channel.channelId
-      }),
+      channels: this.state.channels.filter((currentChannel) => currentChannel.channelType === channel.channelType && currentChannel._id !== channel.channelId),
     });
+
+    console.log('channels AFTER delete', this.state.channels);
   }
 
   addNewChannel = (channel) => {
@@ -302,6 +302,7 @@ class MessageDashboard extends Component {
     }
   }
 
+  // done
   leaveChannel = (message) => {
     if (message.userId === this.props.userId && message.response) {
       const { channels, currentChannel } = message.response;
@@ -352,6 +353,7 @@ class MessageDashboard extends Component {
     }
 
     // get messsages
+    // fix this someday -- you only have to get new messages if the currentChannel has been updated
     // code copied from componentDidMount
     sdk.db.getCollection('messages')
       .then((messages) => {
