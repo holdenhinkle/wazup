@@ -38,6 +38,7 @@ class App extends Component {
           userId: loginRes.id,
           channels: [],
           currentChannel: { channelType: null, channelId: null },
+          broadcast: false,
         }
 
         return sdk.db.createResource('usersmeta', data);
