@@ -64,6 +64,14 @@ const wsFactory = (ws) => ({
       usersInformationCollection,
     });
   },
+  createChannel(usersInformationCollection, channelType, name) {
+    this.sendMessage({
+      action: 'createChannel',
+      usersInformationCollection,
+      channelType,
+      name,
+    });
+  },
   joinChannel(usersInformationCollection, channelType, channelId) {
     this.sendMessage({
       action: 'joinChannel',

@@ -68,7 +68,7 @@ class MessageDashboard extends Component {
     }
   }
 
-  setMessages = (messages) => { // reuse this method
+  setMessages = (messages) => {
     this.setState({
       messages,
     });
@@ -80,21 +80,7 @@ class MessageDashboard extends Component {
     });
   }
 
-  createChannelOrchestrator = (message) => {
-    const { channelType, _id } = message.response;
-    const newChannel = { channelType, channelId: _id };
-
-    this.addNewChannel(message.response);
-
-    if (message.response.userId === this.props.userId) {
-      this.setUsersCurrentChannel(newChannel);
-      this.addChannelToUsersChannels(newChannel);
-      this.updateUsermetaChannels();
-      this.clearMessages();
-    }
-  }
-
-  setChannels = (channels) => { // reuse this method
+  setChannels = (channels) => {
     this.setState({
       channels,
     });
@@ -113,12 +99,14 @@ class MessageDashboard extends Component {
   }
 
   setUsersChannels = (usersChannels) => {
+    console.log('usersChannels', usersChannels);
     this.setState({
       usersChannels,
     });
   }
 
   setUsersCurrentChannel = (usersCurrentChannel) => {
+    console.log('usersCurrentChannel', usersCurrentChannel)
     this.setState({
       usersCurrentChannel,
     });
@@ -181,6 +169,9 @@ class MessageDashboard extends Component {
       case 'joinUsersChannels':
         this.joinUsersChannels(message);
         break;
+      case 'createChannel':
+        this.createChannel(message);
+        break;
       case 'joinChannel':
         this.joinChannel(message);
         break;
@@ -215,9 +206,6 @@ class MessageDashboard extends Component {
     switch (collection) {
       case 'messages':
         this.addNewMessage(message);
-        break;
-      case 'rooms':
-        this.createChannelOrchestrator(message);
         break;
       default:
         return;
@@ -273,7 +261,27 @@ class MessageDashboard extends Component {
     console.log(`${action}: ${usersChannels.length} channel(s) joined`);
   }
 
-  // done
+  createChannel = (message) => {
+    if (this.props.userId === message.response.userId) {
+      const { usersChannels, usersCurrentChannel } = message;
+      this.setUsersChannels(usersChannels);
+      this.setUsersCurrentChannel(usersCurrentChannel);
+
+      // get messsages
+      // code copied from componentDidMount
+      sdk.db.getCollection('messages')
+        .then((messages) => {
+          return messages.filter((message) => (
+            message.channelType === this.state.usersCurrentChannel.channelType &&
+            message.channelId === this.state.usersCurrentChannel.channelId
+          ))
+        })
+        .then((messages) => this.setMessages(messages));
+    }
+
+    this.addNewChannel(message.response);
+  }
+
   joinChannel = (message) => {
     if (message.userId === this.props.userId && message.response) {
       const { channels, currentChannel } = message.response;
@@ -296,7 +304,6 @@ class MessageDashboard extends Component {
     }
   }
 
-  // done
   leaveChannel = (message) => {
     if (message.userId === this.props.userId && message.response) {
       const { channels, currentChannel } = message.response;
@@ -391,14 +398,8 @@ class MessageDashboard extends Component {
     sdk.auth.logout();
   }
 
-  handleChannelSubmit = (name) => {
-    const message = {
-      channelType: 'rooms',
-      userId: this.props.userId,
-      name,
-    }
-
-    this.websocket.actions.createResource('rooms', message);
+  handleCreateChannel = (name) => {
+    this.websocket.actions.createChannel('usersmeta', 'rooms', name);
   }
 
   handleJoinChannel = (channelType, channelId) => {
@@ -435,7 +436,7 @@ class MessageDashboard extends Component {
             onDeleteChannel={this.handleDeleteChannel}
           />
           <AddChannelForm
-            onSubmit={this.handleChannelSubmit}
+            onSubmit={this.handleCreateChannel}
           />
         </div>
         <div id="messages-wrapper">
