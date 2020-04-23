@@ -145,6 +145,9 @@ class MessageDashboard extends Component {
       case 'getAll':
         this.getAll(message);
         break;
+      case 'getOne':
+        this.getOne(message);
+        break;
       case 'create':
         this.create(message);
         break;
@@ -158,7 +161,7 @@ class MessageDashboard extends Component {
         this.delete(message);
         break;
       // case 'broadcast':
-      //   wss.broadcast(message);
+      //   this.broadcast(message);
       //   break;
       case 'connection':
         this.connection(message);
@@ -189,14 +192,6 @@ class MessageDashboard extends Component {
       //   break;
       default:
         console.log('Websocket message received but action not specified.');
-    }
-  }
-
-  getAll = (message) => {
-    if (message.collection === "messages") {
-      this.setState((prevState) => ({
-        messages: [...prevState.messages, ...message.response],
-      }));
     }
   }
 
@@ -343,24 +338,26 @@ class MessageDashboard extends Component {
 
   deleteChannel = (message) => {
     const { channelType, channelId } = message;
-    const { channels, currentChannel } = message.response;
 
-    this.setUsersChannels(channels);
-    this.setUsersCurrentChannel(currentChannel);
+    if (message.response) {
+      const { channels, currentChannel } = message.response;
+      this.setUsersChannels(channels);
+      this.setUsersCurrentChannel(currentChannel);
+
+      // get messsages
+      // fix this someday -- you only have to get new messages if the currentChannel has been updated
+      // code copied from componentDidMount
+      sdk.db.getCollection('messages')
+        .then((messages) => {
+          return messages.filter((message) => (
+            message.channelType === this.state.usersCurrentChannel.channelType &&
+            message.channelId === this.state.usersCurrentChannel.channelId
+          ))
+        })
+        .then((messages) => this.setMessages(messages));
+    }
+
     this.removeChannel({ channelType, channelId });
-
-
-    // get messsages
-    // fix this someday -- you only have to get new messages if the currentChannel has been updated
-    // code copied from componentDidMount
-    sdk.db.getCollection('messages')
-      .then((messages) => {
-        return messages.filter((message) => (
-          message.channelType === this.state.usersCurrentChannel.channelType &&
-          message.channelId === this.state.usersCurrentChannel.channelId
-        ))
-      })
-      .then((messages) => this.setMessages(messages));
   }
 
   handleOnSubmit = (text) => {
