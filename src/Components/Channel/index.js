@@ -50,7 +50,7 @@ class Channel extends Component {
     return (
       <div>
         <p>{isCurrentChannel ? <span>Current Channel: </span> : ''}{channel.name}</p>
-        {isViewable ? <button onClick={this.onChangeChannel}>View</button> : ''}
+        {isViewable ? <button onClick={this.onChangeChannel}>Switch to</button> : ''}
         {isJoinable ? <button onClick={this.onJoinChannel}>Join</button> : ''}
         {isLeavable ? <button onClick={this.onLeaveChannel}>Leave</button> : ''}
         {isDeletable ? <button onClick={this.onDeleteChannel}>Delete</button> : ''}
